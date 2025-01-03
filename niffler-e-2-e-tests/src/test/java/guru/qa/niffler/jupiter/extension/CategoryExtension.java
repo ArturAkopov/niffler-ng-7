@@ -1,8 +1,8 @@
 package guru.qa.niffler.jupiter.extension;
 
-import guru.qa.niffler.api.SpendApiClient;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.service.SpendDbClient;
 import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
@@ -12,7 +12,7 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
 
     private static final ExtensionContext.Namespace CATEGORY_NAMESPACE = ExtensionContext.Namespace.create(CategoryExtension.class);
 
-    private final SpendApiClient spendApiClient = new SpendApiClient();
+    private final SpendDbClient spendDbClient = new SpendDbClient();
 
     @Override
     public void beforeEach(ExtensionContext context) {
@@ -26,7 +26,7 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
                                 false
                         );
 
-                        CategoryJson createCategory = spendApiClient.createCategory(categoryJson);
+                        CategoryJson createCategory = spendDbClient.createCategory(categoryJson);
 
                         if (anno.categories()[0].archived()) {
                             CategoryJson archivedCategory = new CategoryJson(
@@ -35,7 +35,8 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
                                     createCategory.username(),
                                     true
                             );
-                            createCategory = spendApiClient.updateCategory(archivedCategory);
+                            spendDbClient.updateCategory(archivedCategory);
+                            createCategory = archivedCategory;
                         }
 
                         context.getStore(CategoryExtension.CATEGORY_NAMESPACE).put(context.getUniqueId(), createCategory);
@@ -64,7 +65,7 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
                     categoryJson.username(),
                     true
             );
-            spendApiClient.updateCategory(archivedJson);
+            spendDbClient.updateCategory(archivedJson);
         }
 
     }
