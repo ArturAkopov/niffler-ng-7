@@ -1,5 +1,6 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.components.Header;
 import io.qameta.allure.Step;
@@ -27,7 +28,12 @@ public class ProfilePage extends BasePage<MainPage> {
             saveChangesButton = $("button[type='submit']"),
             categoryInput = $("input#category"),
             showArchivedCheckbox = $("input[type='checkbox']"),
-            alert = $(".MuiSnackbar-root");
+            alert = $(".MuiSnackbar-root"),
+            avatarImage = $(".MuiAvatar-img");
+
+    private final ElementsCollection
+            listCategory = $("div").$$("div[role='button']"),
+            archiveSubmitButtons = $$("div[role='dialog'] button");
 
     @Nonnull
     @Step("Загрузка изображения <file> на странице профиля")
@@ -67,6 +73,13 @@ public class ProfilePage extends BasePage<MainPage> {
     @Step("Сохранение изменений на странице пользователя")
     public ProfilePage saveChanges() {
         saveChangesButton.click();
+        return this;
+    }
+
+    @Step("Архивирование категории {categoryName}")
+    public ProfilePage archivedCategory(String categoryName) {
+        listCategory.find(text(categoryName)).parent().parent().$("button[aria-label='Archive category']").click();
+        archiveSubmitButtons.find(text("Archive")).click();
         return this;
     }
 }
