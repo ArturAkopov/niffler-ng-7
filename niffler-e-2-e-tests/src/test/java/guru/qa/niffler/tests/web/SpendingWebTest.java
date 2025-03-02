@@ -1,11 +1,13 @@
 package guru.qa.niffler.tests.web;
 
+import guru.qa.niffler.condition.Bubble;
 import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.jupiter.annotation.DisabledByIssue;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
+import guru.qa.niffler.model.rest.SpendJson;
 import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
@@ -78,14 +80,14 @@ public class SpendingWebTest {
             )
     )
     @DisplayName("Проверка компонента статистики")
-    @ScreenShotTest(value = "image/expected-stat.png",rewriteExpected = true)
+    @ScreenShotTest(value = "image/expected-stat.png", rewriteExpected = true)
     void checkStatComponentTest(@NotNull UserJson user, BufferedImage expected) throws IOException {
         new LoginPage()
                 .open()
                 .login(user.username(), user.testData().password())
                 .getStatComponent()
                 .checkStatisticImage(expected)
-                .checkBubbles(Color.yellow);
+                .checkBubbles(new Bubble(Color.yellow, "Обучение 79990 ₽"));
     }
 
     @DisplayName("Проверка компонента статистики после редактирования траты")
@@ -159,7 +161,94 @@ public class SpendingWebTest {
                 .checkCellCategoryAndAmountInStatisticsBlock("Archived",
                         String.format("%.0f", user.testData().spends().getFirst().amount()))
                 .checkStatisticImage(expected)
-                .checkBubbles(Color.yellow);
+                .checkBubbles(new Bubble(Color.yellow, "Archived 2000 ₽"));
+    }
+
+    @DisplayName("Проверяем, что состояние диаграммы трат имеет Bubbles в любом порядке")
+    @User(
+            spendings = {
+                    @Spending(
+                            category = "Обучение",
+                            description = "Обучение Advanced 2.0",
+                            amount = 79990
+                    ),
+                    @Spending(category = "Pet a duck",
+                            description = "Hobbies",
+                            amount = 2000
+                    ),
+                    @Spending(category = "Сосиска",
+                            description = "Съесть сосиску",
+                            amount = 5000
+                    )
+            }
+    )
+    @Test
+    void checkBubblesInAnyOderTest(UserJson user) {
+        new LoginPage()
+                .open()
+                .login(user.username(), user.testData().password())
+                .getStatComponent()
+                .checkBubblesInAnyOrder(
+                        new Bubble(Color.yellow, "Обучение 79990 ₽"),
+                        new Bubble(Color.green, "Сосиска 5000 ₽"),
+                        new Bubble(Color.orange, "Pet a duck 2000 ₽")
+                );
+    }
+
+    @DisplayName("Проверка содержания в состоянии диаграммы цветов и текстов для искомых трат")
+    @User(
+            spendings = {
+                    @Spending(
+                            category = "Обучение",
+                            description = "Обучение Advanced 2.0",
+                            amount = 79990
+                    ),
+                    @Spending(category = "Pet a duck",
+                            description = "Hobbies",
+                            amount = 2000
+                    ),
+                    @Spending(category = "Сосиска",
+                            description = "Съесть сосиску",
+                            amount = 5000
+                    )
+            }
+    )
+    @Test
+    void checkStatComponentContainsBubblesTest(UserJson user) {
+        new LoginPage()
+                .open()
+                .login(user.username(), user.testData().password())
+                .getStatComponent()
+                .checkBubblesContains(
+                        new Bubble(Color.yellow, "Обучение 79990 ₽"),
+                        new Bubble(Color.orange, "Pet a duck 2000 ₽")
+                );
+    }
+
+    @DisplayName("Проверка наличия в таблице статистики трат искомых")
+    @User(
+            spendings = {
+                    @Spending(
+                            category = "Обучение",
+                            description = "Обучение Advanced 2.0",
+                            amount = 79990
+                    ),
+                    @Spending(category = "Pet a duck",
+                            description = "Hobbies",
+                            amount = 2000
+                    )
+            }
+
+    )
+    @Test
+    void checkSpendExistTest(UserJson user) {
+
+        SpendJson[] expectedSpends = user.testData().spends().toArray(SpendJson[]::new);
+        new LoginPage()
+                .open()
+                .login(user.username(), user.testData().password())
+                .getSpendingTable()
+                .checkSpendingTable(expectedSpends);
     }
 }
 

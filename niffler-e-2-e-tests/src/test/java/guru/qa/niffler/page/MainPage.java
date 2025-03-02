@@ -44,4 +44,10 @@ public class MainPage extends BasePage<MainPage> {
         searchField.search(spendingDescription);
         tableRows.find(text(spendingDescription)).shouldBe(visible);
     }
+
+    @Nonnull
+    public StatComponent getStatComponent() {
+        statComponent.getSelf().scrollIntoView(true);
+        return statComponent;
+    }
 }
