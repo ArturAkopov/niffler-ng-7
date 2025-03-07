@@ -2,6 +2,7 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.jupiter.extension.ScreenShotTestExtension;
 import guru.qa.niffler.page.components.Header;
@@ -29,21 +30,50 @@ public class ProfilePage extends BasePage<MainPage> {
 
     public static final String PROFILE_PAGE_URL = CONFIG.frontUrl() + "profile";
 
-    private final Header header = new Header();
+    private final Header header;
 
     private final SelenideElement
-            uploadNewPictureButton = $("input#image__input"),
-            nameInput = $("input#name"),
-            saveChangesButton = $("button[type='submit']"),
-            categoryInput = $("input#category"),
-            showArchivedCheckbox = $("input[type='checkbox']"),
-            alert = $(".MuiSnackbar-root"),
-            avatarImage = $(".MuiAvatar-img"),
-            avatar = $("#image__input").parent().$("img");
+            uploadNewPictureButton,
+            nameInput,
+            saveChangesButton,
+            categoryInput,
+            showArchivedCheckbox,
+            alert,
+            avatarImage,
+            avatar;
 
     private final ElementsCollection
-            listCategory = $("div").$$("div[role='button']"),
-            archiveSubmitButtons = $$("div[role='dialog'] button");
+            listCategory,
+            archiveSubmitButtons;
+
+    public ProfilePage() {
+        this.header = new Header();
+        this.uploadNewPictureButton = $("input#image__input");
+        this.nameInput = $("input#name");
+        this.saveChangesButton = $("button[type='submit']");
+        this.categoryInput = $("input#category");
+        this.showArchivedCheckbox = $("input[type='checkbox']");
+        this.alert = $(".MuiSnackbar-root");
+        this.avatarImage = $(".MuiAvatar-img");
+        this.avatar = $("#image__input").parent().$("img");
+        this.listCategory = $("div").$$("div[role='button']");
+        this.archiveSubmitButtons = $$("div[role='dialog'] button");
+    }
+
+    public ProfilePage(SelenideDriver driver) {
+        super(driver);
+        this.header = new Header(driver);
+        this.uploadNewPictureButton = driver.$("input#image__input");
+        this.nameInput = driver.$("input#name");
+        this.saveChangesButton = driver.$("button[type='submit']");
+        this.categoryInput = driver.$("input#category");
+        this.showArchivedCheckbox = driver.$("input[type='checkbox']");
+        this.alert = driver.$(".MuiSnackbar-root");
+        this.avatarImage = driver.$(".MuiAvatar-img");
+        this.avatar = driver.$("#image__input").parent().$("img");
+        this.listCategory = driver.$("div").$$("div[role='button']");
+        this.archiveSubmitButtons = driver.$$("div[role='dialog'] button");
+    }
 
     @Nonnull
     @Step("Загрузка изображения <file> на странице профиля")
@@ -76,7 +106,12 @@ public class ProfilePage extends BasePage<MainPage> {
 
     @Step("Проверка нахождения категории <categoryName> в отображаемом списке на странице профиля")
     public void checkCategoryInCategoryList(String categoryName) {
-        $$(".css-17u3xlq").findBy(text(categoryName)).shouldBe(visible);
+        $$(".MuiChip-filled.MuiChip-clickable").findBy(text(categoryName)).shouldBe(visible);
+    }
+
+    @Step("Проверка нахождения категории <categoryName> в отображаемом списке на странице профиля")
+    public void checkCategoryInCategoryList(String categoryName,SelenideDriver driver) {
+        driver.$$(".MuiChip-filled.MuiChip-clickable").findBy(text(categoryName)).shouldBe(visible);
     }
 
     @Nonnull
@@ -103,7 +138,7 @@ public class ProfilePage extends BasePage<MainPage> {
                         actualImage, expected
                 ),
                 ScreenShotTestExtension.ASSERT_SCREEN_MESSAGE
-    );
+        );
         return this;
     }
 }

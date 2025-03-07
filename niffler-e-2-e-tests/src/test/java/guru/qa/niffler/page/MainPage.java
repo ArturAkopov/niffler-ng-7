@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.components.Header;
 import guru.qa.niffler.page.components.SearchField;
@@ -21,14 +22,26 @@ public class MainPage extends BasePage<MainPage> {
     private final static String MAIN_PAGE_URL = CONFIG.frontUrl() + "login";
 
     private final SearchField searchField = new SearchField();
-    private final Header header = new Header();
+    private final Header header;
     private final SpendingTable spendingTable = new SpendingTable();
     private final StatComponent statComponent = new StatComponent();
 
-    private final SelenideElement pieChart = $("canvas[role='img']");
+    private final SelenideElement pieChart;
 
-    private final ElementsCollection
-            tableRows = $("#spendings tbody").$$("tr");
+    private final ElementsCollection tableRows;
+
+    public MainPage() {
+        this.pieChart = $("canvas[role='img']");
+        this.tableRows = $("#spendings tbody").$$("tr");
+        this.header = new Header();
+    }
+
+    public MainPage(SelenideDriver driver) {
+        super(driver);
+        this.pieChart = driver.$("canvas[role='img']");
+        this.tableRows = driver.$("#spendings tbody").$$("tr");
+        this.header = new Header(driver);
+    }
 
     @Step("Нажатие кнопки изменения траты <spendingDescription>")
     @Nonnull
