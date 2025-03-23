@@ -182,4 +182,27 @@ public class UsersApiClient implements UsersClient {
             return Collections.emptyList();
         }
     }
+
+    @Step("Send GET request internal/friends/all to niffler-userdata")
+    @Nonnull
+    public List<UserJson> friends(String username, String searchQuery) {
+        final Response<List<UserJson>> response;
+
+        try {
+            response = userdataApi.friends(
+                    username,
+                    searchQuery
+            ).execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        assertEquals(200, response.code());
+
+        if (response.isSuccessful() && response.body() != null) {
+            return response.body();
+        } else {
+            return Collections.emptyList();
+        }
+    }
 }

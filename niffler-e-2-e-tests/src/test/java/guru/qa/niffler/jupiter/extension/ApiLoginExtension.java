@@ -49,7 +49,7 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
     }
 
     @NotNull
-    public static ApiLoginExtension restApiLoginExtension() {
+    public static ApiLoginExtension api() {
         return new ApiLoginExtension(false);
     }
 
@@ -86,10 +86,7 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
                         Selenide.open(CFG.frontUrl());
                         Selenide.localStorage().setItem("id_token", getToken());
                         WebDriverRunner.getWebDriver().manage().addCookie(
-                                new Cookie(
-                                        "JSESSIONID",
-                                        ThreadSafeCookieStore.INSTANCE.cookieValue("JSESSIONID")
-                                )
+                                getJsessionIdCookie()
                         );
                         Selenide.open(MainPage.MAIN_PAGE_URL, MainPage.class).checkThatPageLoaded();
                     }
@@ -104,7 +101,7 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
 
     @Override
     public String resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return getToken();
+        return "Bearer " + getToken();
     }
 
     public static void setToken(String token) {
