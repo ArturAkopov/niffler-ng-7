@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RestTest
-public class FriendsV2RestTest {
+public class FriendsV2RestTests {
 
     @RegisterExtension
     private static final ApiLoginExtension apiLoginExtension = ApiLoginExtension.api();

@@ -20,7 +20,7 @@ import static guru.qa.niffler.model.FriendshipStatus.INVITE_RECEIVED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RestTest
-public class FriendsRestTest {
+public class FriendsRestTests {
 
     @RegisterExtension
     private static final ApiLoginExtension apiLoginExtension = ApiLoginExtension.api();

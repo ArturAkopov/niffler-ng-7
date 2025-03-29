@@ -21,7 +21,7 @@ import java.time.LocalDate;
 
 
 @WebTest
-public class SpendingWebTest {
+public class SpendingWebTests {
 
     @DisplayName("Название категории должно быть изменено в таблице")
     @User(
