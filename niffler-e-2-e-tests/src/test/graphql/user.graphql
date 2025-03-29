@@ -1,17 +1,134 @@
-mutation UpdateUser($input: UserInput!) {
-    user(input: $input) {
+query CurrentUser {
+    user {
         id
         username
         fullname
         photo
+        categories {
+            id
+            name
+            archived
+        }
     }
 }
 
-mutation UpdateFriendshipStatus($input: FriendshipInput!) {
-    friendship(input: $input) {
+query Categories {
+    user {
+        categories {
+            id
+            name
+            archived
+        }
+    }
+}
+query Friends($page:Int!, $size:Int!, $sort: [String!], $searchQuery:String) {
+    user {
+        friends(page: $page, size: $size, sort: $sort, searchQuery: $searchQuery) {
+            edges {
+                node {
+                    id
+                    username
+                    photoSmall
+                    fullname
+                    friendshipStatus
+                }
+            }
+            pageInfo {
+                hasPreviousPage
+                hasNextPage
+            }
+        }
+    }
+}
+
+query AllPeople($page:Int!, $size:Int!, $sort: [String!], $searchQuery:String) {
+    allPeople(page: $page, size: $size, sort: $sort, searchQuery: $searchQuery) {
+        edges {
+            node {
+                id
+                username
+                photoSmall
+                fullname
+                friendshipStatus
+            }
+        }
+        pageInfo {
+            hasPreviousPage
+            hasNextPage
+        }
+    }
+}
+
+query UserWithFriendsAndTheirCategories(
+    $page: Int!
+    $size: Int!
+    $sort: [String!]
+    $searchQuery: String
+) {
+    user {
         id
         username
         fullname
         photo
+        photoSmall
+        categories {
+            id
+            name
+            archived
+        }
+        friends(page: $page, size: $size, sort: $sort, searchQuery: $searchQuery) {
+            edges {
+                node {
+                    id
+                    username
+                    fullname
+                    photoSmall
+                    friendshipStatus
+                    categories {
+                        id
+                        name
+                        archived
+                    }
+                }
+            }
+            pageInfo {
+                hasPreviousPage
+                hasNextPage
+            }
+        }
+    }
+}
+
+query UserWithNestedFriends(
+    $page: Int!
+    $size: Int!
+) {
+    user {
+        id
+        username
+        friends(page: $page, size: $size) {
+            edges {
+                node {
+                    id
+                    username
+                    friends(page: $page, size: $page) {
+                        edges {
+                            node {
+                                id
+                                username
+                                friends(page: $page, size: $page) {
+                                    edges {
+                                        node {
+                                            id
+                                            username
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
