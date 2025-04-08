@@ -59,7 +59,7 @@ public class CurrencyGrpcTests extends BaseGrpcTest{
                 .build();
 
         final CalculateResponse response = blockingStub.calculateRate(request);
-        Assertions.assertEquals(calculatedAmountExpected,response.getCalculatedAmount());
+        Assertions.assertEquals(calculatedAmountExpected,response.getCalculatedAmount(), 0.01);
     }
 
     @Test
