@@ -1,7 +1,7 @@
 package guru.qa.niffler.service.impl;
 
 import guru.qa.jaxb.userdata.*;
-import guru.qa.niffler.api.UserdataSoupApi;
+import guru.qa.niffler.api.UserdataSoapApi;
 import guru.qa.niffler.api.core.RestClient;
 import guru.qa.niffler.api.core.converter.SoapConverterFactory;
 import guru.qa.niffler.config.Config;
@@ -16,14 +16,14 @@ import java.io.IOException;
 import static java.util.Objects.requireNonNull;
 
 @ParametersAreNonnullByDefault
-public class UserdataSoupClient extends RestClient {
+public class UserdataSoapClient extends RestClient {
 
     private static final Config CONFIG = Config.getInstance();
-    private final UserdataSoupApi userdataSoupApi;
+    private final UserdataSoapApi userdataSoapApi;
 
-    public UserdataSoupClient() {
+    public UserdataSoapClient() {
         super(CONFIG.userdataUrl(), false, SoapConverterFactory.create("niffler-userdata"), HttpLoggingInterceptor.Level.BODY);
-        this.userdataSoupApi = create(UserdataSoupApi.class);
+        this.userdataSoapApi = create(UserdataSoapApi.class);
     }
 
 
@@ -32,25 +32,25 @@ public class UserdataSoupClient extends RestClient {
     public UserResponse currentUser(UserJson userJson) throws IOException {
         CurrentUserRequest request = new CurrentUserRequest();
         request.setUsername(userJson.username());
-        return requireNonNull(userdataSoupApi.currentUser(request).execute().body());
+        return requireNonNull(userdataSoapApi.currentUser(request).execute().body());
     }
 
     @NotNull
     @Step("Update user info using SOUP")
     public UserResponse updateUser(UpdateUserRequest request) throws IOException {
-        return requireNonNull(userdataSoupApi.updateUserInfo(request).execute().body());
+        return requireNonNull(userdataSoapApi.updateUserInfo(request).execute().body());
     }
 
     @NotNull
     @Step("Get all user info order by username using SOUP")
     public UsersResponse allUsersSort(AllUsersRequest request) throws IOException {
-        return requireNonNull(userdataSoupApi.allUsers(request).execute().body());
+        return requireNonNull(userdataSoapApi.allUsers(request).execute().body());
     }
 
     @NotNull
     @Step("Get all user info page using SOUP")
     public UsersResponse allUsersPage(AllUsersPageRequest request) throws IOException {
-        return requireNonNull(userdataSoupApi.allUsers(request).execute().body());
+        return requireNonNull(userdataSoapApi.allUsers(request).execute().body());
     }
 
     @NotNull
@@ -59,7 +59,7 @@ public class UserdataSoupClient extends RestClient {
         FriendsRequest request = new FriendsRequest();
         request.setUsername(username);
         request.setSearchQuery(sortUsername);
-        return requireNonNull(userdataSoupApi.friends(request).execute().body());
+        return requireNonNull(userdataSoapApi.friends(request).execute().body());
     }
 
     @NotNull
@@ -71,7 +71,7 @@ public class UserdataSoupClient extends RestClient {
         FriendsPageRequest request = new FriendsPageRequest();
         request.setUsername(userJson.username());
         request.setPageInfo(pageInfo);
-        return requireNonNull(userdataSoupApi.friendsPage(request).execute().body());
+        return requireNonNull(userdataSoapApi.friendsPage(request).execute().body());
     }
 
     @Step("Remove friend for user using SOUP")
@@ -79,7 +79,7 @@ public class UserdataSoupClient extends RestClient {
         RemoveFriendRequest request = new RemoveFriendRequest();
         request.setUsername(username);
         request.setFriendToBeRemoved(removedFriendUsername);
-        userdataSoupApi.removeFriend(request).execute();
+        userdataSoapApi.removeFriend(request).execute();
     }
 
     @NotNull
@@ -88,7 +88,7 @@ public class UserdataSoupClient extends RestClient {
         SendInvitationRequest request = new SendInvitationRequest();
         request.setUsername(username);
         request.setFriendToBeRequested(friendName);
-        return requireNonNull(userdataSoupApi.sendInvitation(request).execute().body());
+        return requireNonNull(userdataSoapApi.sendInvitation(request).execute().body());
     }
 
     @NotNull
@@ -97,7 +97,7 @@ public class UserdataSoupClient extends RestClient {
         AcceptInvitationRequest request = new AcceptInvitationRequest();
         request.setUsername(username);
         request.setFriendToBeAdded(incomeInvitationUsername);
-        return requireNonNull(userdataSoupApi.acceptInvitation(request).execute().body());
+        return requireNonNull(userdataSoapApi.acceptInvitation(request).execute().body());
     }
 
     @NotNull
@@ -106,7 +106,7 @@ public class UserdataSoupClient extends RestClient {
         DeclineInvitationRequest request = new DeclineInvitationRequest();
         request.setUsername(username);
         request.setInvitationToBeDeclined(incomeInvitationUsername);
-        return requireNonNull(userdataSoupApi.declineInvitation(request).execute().body());
+        return requireNonNull(userdataSoapApi.declineInvitation(request).execute().body());
     }
 
 

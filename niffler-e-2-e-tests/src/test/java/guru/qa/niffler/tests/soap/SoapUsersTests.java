@@ -1,10 +1,10 @@
-package guru.qa.niffler.tests.soup;
+package guru.qa.niffler.tests.soap;
 
 import guru.qa.jaxb.userdata.*;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.SoupTest;
 import guru.qa.niffler.model.rest.UserJson;
-import guru.qa.niffler.service.impl.UserdataSoupClient;
+import guru.qa.niffler.service.impl.UserdataSoapClient;
 import org.junit.jupiter.api.Test;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -15,14 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SoupTest
 @ParametersAreNonnullByDefault
-public class SoupUsersTests {
+public class SoapUsersTests {
 
-    private final UserdataSoupClient userdataSoupClient = new UserdataSoupClient();
+    private final UserdataSoapClient userdataSoapClient = new UserdataSoapClient();
 
     @Test
     @User
     void getCurrentUserTest(UserJson userJson) throws IOException {
-        UserResponse response = userdataSoupClient.currentUser(userJson);
+        UserResponse response = userdataSoapClient.currentUser(userJson);
         assertEquals(
                 userJson.username(),
                 response.getUser().getUsername()
@@ -34,7 +34,7 @@ public class SoupUsersTests {
             friends = 3
     )
     void getAllFriendsPageForUserTest(UserJson userJson) throws IOException {
-        UsersResponse response = userdataSoupClient.allFriendsPage(userJson, 1, 10);
+        UsersResponse response = userdataSoapClient.allFriendsPage(userJson, 1, 10);
         assertEquals(1, response.getTotalPages().intValue());
         assertEquals(3, response.getTotalElements().intValue());
     }
@@ -45,7 +45,7 @@ public class SoupUsersTests {
     )
     void getAllFriendsForUserWithSortByUsernameTest(UserJson userJson) throws IOException {
         final String sortUsername = userJson.testData().friends().getFirst().username();
-        UsersResponse response = userdataSoupClient.allFriendsSort(userJson.username(), sortUsername);
+        UsersResponse response = userdataSoapClient.allFriendsSort(userJson.username(), sortUsername);
         assertEquals(1, response.getUser().size());
         assertTrue(userJson.testData().friends().stream()
                 .map(UserJson::username)
@@ -58,8 +58,8 @@ public class SoupUsersTests {
     )
     void removeFriendTest(UserJson userJson) throws IOException {
         final String removedFriend = userJson.testData().friends().getFirst().username();
-        userdataSoupClient.removeFriend(userJson.username(), removedFriend);
-        UsersResponse response = userdataSoupClient.allFriendsSort(userJson.username(), removedFriend);
+        userdataSoapClient.removeFriend(userJson.username(), removedFriend);
+        UsersResponse response = userdataSoapClient.allFriendsSort(userJson.username(), removedFriend);
         assertEquals(0, response.getUser().size());
     }
 
@@ -69,8 +69,8 @@ public class SoupUsersTests {
     )
     void acceptIncomeInvitationFriendTest(UserJson userJson) throws IOException {
         final String friendUsername = userJson.testData().incomeInvitations().getFirst().username();
-        userdataSoupClient.acceptInvitationFriend(userJson.username(), friendUsername);
-        UsersResponse response = userdataSoupClient.allFriendsSort(userJson.username(), friendUsername);
+        userdataSoapClient.acceptInvitationFriend(userJson.username(), friendUsername);
+        UsersResponse response = userdataSoapClient.allFriendsSort(userJson.username(), friendUsername);
         assertEquals(1, response.getUser().size());
         assertEquals(friendUsername, response.getUser().getFirst().getUsername());
 
@@ -82,8 +82,8 @@ public class SoupUsersTests {
     )
     void declineIncomeInvitationFriendTest(UserJson userJson) throws IOException {
         final String friendUsername = userJson.testData().incomeInvitations().getFirst().username();
-        userdataSoupClient.declineInvitationFriend(userJson.username(), friendUsername);
-        UsersResponse response = userdataSoupClient.allFriendsSort(userJson.username(), friendUsername);
+        userdataSoapClient.declineInvitationFriend(userJson.username(), friendUsername);
+        UsersResponse response = userdataSoapClient.allFriendsSort(userJson.username(), friendUsername);
         assertEquals(0, response.getUser().size());
     }
 
@@ -92,7 +92,7 @@ public class SoupUsersTests {
     void sendInvitationFriendTest(UserJson userJson) throws IOException {
         final String username = "Artur";
         final String friendName = userJson.username();
-        UserResponse response = userdataSoupClient.sendInvitationFriend(username, friendName);
+        UserResponse response = userdataSoapClient.sendInvitationFriend(username, friendName);
         assertEquals(INVITE_SENT, response.getUser().getFriendshipStatus());
     }
 

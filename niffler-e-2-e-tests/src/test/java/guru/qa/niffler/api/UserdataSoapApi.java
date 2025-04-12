@@ -5,7 +5,7 @@ import retrofit2.Call;
 import retrofit2.http.*;
 
 
-public interface UserdataSoupApi {
+public interface UserdataSoapApi {
 
     @Headers(value = {
             "Content-type: text/xml",
