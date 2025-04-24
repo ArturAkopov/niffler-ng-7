@@ -5,16 +5,45 @@
       "125.0": {
         "image": "selenoid/vnc_chrome:125.0",
         "port": "4444",
+        "path": "/wd/hub",
         "env": [
-          "TZ=Europe/Moscow"
-        ]
+          "TZ=Europe/Moscow",
+          "SE_NODE_OVERRIDE_MAX_SESSIONS=true",
+          "SE_NODE_MAX_SESSIONS=3"
+        ],
+        "volumes": ["/dev/shm:/dev/shm"],
+        "tmpfs": {"/tmp": "size=512m"},
+        "shmSize": 512000000
       },
       "127.0": {
         "image": "selenoid/vnc_chrome:127.0",
         "port": "4444",
+        "path": "/wd/hub",
         "env": [
-          "TZ=Europe/Moscow"
-        ]
+          "TZ=Europe/Moscow",
+          "SE_NODE_OVERRIDE_MAX_SESSIONS=true",
+          "SE_NODE_MAX_SESSIONS=3"
+        ],
+        "volumes": ["/dev/shm:/dev/shm"],
+        "tmpfs": {"/tmp": "size=512m"},
+        "shmSize": 512000000
+      }
+    }
+  },
+  "firefox": {
+    "default": "125.0",
+    "versions": {
+      "125.0": {
+        "image": "selenoid/vnc_firefox:125.0",
+        "port": "4444",
+        "path": "/wd/hub",
+        "env": [
+          "TZ=Europe/Moscow",
+          "SE_NODE_OVERRIDE_MAX_SESSIONS=true",
+          "SE_NODE_MAX_SESSIONS=3"
+        ],
+        "volumes": ["/dev/shm:/dev/shm"],
+        "shmSize": 512000000
       }
     }
   }
