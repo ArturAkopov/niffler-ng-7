@@ -28,13 +28,20 @@ if [ ! -z "$docker_containers" ]; then
   docker rm $docker_containers
 fi
 
-if [ ! -z "$docker_images" ]; then
-  echo "### Remove images: $docker_images ###"
-  docker rmi $docker_images
+if [ "$1" = "firefox" ]; then
+  export BROWSER="firefox"
+  docker pull selenoid/vnc_firefox:125.0
 fi
 
-bash ./gradlew clean
-bash ./gradlew jibDockerBuild -x :niffler-e-2-e-tests:test
+for image in "postgres:15.1" "confluentinc/cp-zookeeper:7.3.2" "confluentinc/cp-kafka:7.3.2" "${PREFIX}/niffler-auth-docker:latest" "${PREFIX}/niffler-currency-docker:latest" "${PREFIX}/niffler-gateway-docker:latest" "${PREFIX}/niffler-spend-docker:latest" "${PREFIX}/niffler-userdata-docker:latest" "${PREFIX}/niffler-ng-client-docker:latest" "aerokube/selenoid:1.11.3" "aerokube/selenoid-ui:1.10.11" "${PREFIX}/niffler-e-2-e-tests:latest" "frankescobar/allure-docker-service:2.27.0" "frankescobar/allure-docker-service-ui:7.0.3"; do
+
+  if [[ "$(docker images -q "$image" 2> /dev/null)" == "" ]]; then
+    bash ./gradlew clean
+    bash ./gradlew jibDockerBuild -x :niffler-e-2-e-tests:test
+    echo "### Building images ###"
+    break 2
+  fi
+done
 
 docker pull selenoid/vnc_chrome:127.0
 docker compose up -d

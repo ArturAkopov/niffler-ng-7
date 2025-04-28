@@ -37,4 +37,6 @@ public interface Config {
     default String ghUrl() {
         return "https://api.github.com/";
     }
+
+    String allureDockerServiceUrl();
 }

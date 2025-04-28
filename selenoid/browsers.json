@@ -17,5 +17,17 @@
         ]
       }
     }
+  },
+  "firefox": {
+    "default": "125.0",
+    "versions": {
+      "125.0": {
+        "image": "selenoid/vnc_firefox:125.0",
+        "port": "4444",
+        "env": [
+          "TZ=Europe/Moscow"
+        ]
+      }
+    }
   }
 }
