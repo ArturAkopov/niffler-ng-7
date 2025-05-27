@@ -16,6 +16,7 @@ import java.util.UUID;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,48 +26,49 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class CategoriesControllerTest {
 
-  @Autowired
-  private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-  @Autowired
-  private ObjectMapper om;
+    @Autowired
+    private ObjectMapper om;
 
-  @Test
-  @Sql("/categoriesListShouldBeReturnedForCurrentUser.sql")
-  void categoriesListShouldBeReturnedForCurrentUser() throws Exception {
-    final String fixtureUser = "duck";
+    @Test
+    @Sql("/categoriesListShouldBeReturnedForCurrentUser.sql")
+    void categoriesListShouldBeReturnedForCurrentUser() throws Exception {
+        final String fixtureUser = "duck";
 
-    mockMvc.perform(get("/internal/categories/all")
-            .param("username", fixtureUser))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].username").value(fixtureUser))
-        .andExpect(jsonPath("$[0].name").value("Веселье"))
-        .andExpect(jsonPath("$[0].archived").value(false))
-        .andExpect(jsonPath("$[1].username").value(fixtureUser))
-        .andExpect(jsonPath("$[1].name").value("Магазины"))
-        .andExpect(jsonPath("$[1].archived").value(true));
-  }
+        mockMvc.perform(get("/internal/categories/all")
+                        .param("username", fixtureUser))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].username").value(fixtureUser))
+                .andExpect(jsonPath("$[0].name").value("Веселье"))
+                .andExpect(jsonPath("$[0].archived").value(false))
+                .andExpect(jsonPath("$[1].username").value(fixtureUser))
+                .andExpect(jsonPath("$[1].name").value("Магазины"))
+                .andExpect(jsonPath("$[1].archived").value(true))
+                .andDo(print());
+    }
 
-  @Test
-  @Sql("/categoryNameAndArchivedStatusShouldBeUpdated.sql")
-  void categoryNameAndArchivedStatusShouldBeUpdated() throws Exception {
-    final String fixtureCategoryId = "06fe9c06-ae67-406e-a711-ba729e3d4775";
-    final String fixtureUser = "duck";
+    @Test
+    @Sql("/categoryNameAndArchivedStatusShouldBeUpdated.sql")
+    void categoryNameAndArchivedStatusShouldBeUpdated() throws Exception {
+        final String fixtureCategoryId = "06fe9c06-ae67-406e-a711-ba729e3d4775";
+        final String fixtureUser = "duck";
 
-    CategoryJson categoryJson = new CategoryJson(
-        UUID.fromString(fixtureCategoryId),
-        "Бары",
-        fixtureUser,
-        true
-    );
+        CategoryJson categoryJson = new CategoryJson(
+                UUID.fromString(fixtureCategoryId),
+                "Бары",
+                fixtureUser,
+                true
+        );
 
-    mockMvc.perform(patch("/internal/categories/update")
-            .contentType(APPLICATION_JSON)
-            .content(om.writeValueAsString(categoryJson)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(fixtureCategoryId))
-        .andExpect(jsonPath("$.name").value("Бары"))
-        .andExpect(jsonPath("$.username").value(fixtureUser))
-        .andExpect(jsonPath("$.archived").value(true));
-  }
+        mockMvc.perform(patch("/internal/categories/update")
+                        .contentType(APPLICATION_JSON)
+                        .content(om.writeValueAsString(categoryJson)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(fixtureCategoryId))
+                .andExpect(jsonPath("$.name").value("Бары"))
+                .andExpect(jsonPath("$.username").value(fixtureUser))
+                .andExpect(jsonPath("$.archived").value(true));
+    }
 }
