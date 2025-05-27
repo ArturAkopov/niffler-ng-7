@@ -3,10 +3,37 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.6'
     id 'com.google.cloud.tools.jib' version '3.4.1'
     id 'com.github.edeandrea.xjc-generation' version '1.6'
+    id 'com.google.protobuf' version '0.9.4'
 }
 
 group = 'guru.qa'
 version = '2.1.1'
+
+tasks.register('prepareWiremockDirs') {
+    doLast {
+        mkdir "${projectDir}/src/test/resources/wiremock/grpc"
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.1"
+    }
+
+    generateProtoTasks {
+        all().each { task ->
+            task.generateDescriptorSet = true
+            task.descriptorSetOptions.path = "${projectDir}/src/test/resources/wiremock/grpc/niffler-currency.dsc"
+            task.descriptorSetOptions.includeSourceInfo = true
+            task.descriptorSetOptions.includeImports = true
+            task.dependsOn 'prepareWiremockDirs'
+        }
+    }
+}
+
+tasks.named('generateProto') {
+    dependsOn 'prepareWiremockDirs'
+}
 
 dependencies {
     implementation project(':niffler-grpc-common')
@@ -32,8 +59,10 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
-    testImplementation "org.wiremock:wiremock:${project.ext.wiremockVersion}"
-    testImplementation "org.wiremock:wiremock-jetty12:${project.ext.wiremockVersion}"
+    testImplementation 'org.wiremock:wiremock-standalone:3.3.1'
+    testImplementation 'org.wiremock:wiremock-grpc-extension:0.10.0'
+
+    protobuf files("../niffler-grpc-common/src/main/proto/niffler-currency.proto")
 }
 
 xjcGeneration {
@@ -54,7 +83,16 @@ sourceSets {
             srcDir("$buildDir/generated-sources/main/xjc")
         }
     }
+    test {
+        resources {
+            srcDirs = [
+                    "${projectDir}/src/test/resources"
+            ]
+            exclude '**/*.dsc'
+        }
+    }
 }
+
 
 jib {
     container {
