@@ -10,7 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.wiremock.grpc.GrpcExtensionFactory;
+import org.wiremock.grpc.Jetty12GrpcExtensionFactory;
 import org.wiremock.grpc.dsl.WireMockGrpc;
 import org.wiremock.grpc.dsl.WireMockGrpcService;
 
@@ -34,8 +34,8 @@ class CurrencyControllerTest {
             WireMockConfiguration
                     .wireMockConfig()
                     .port(WIREMOCK_PORT)
-                    .withRootDirectory("src/test/resources/wiremock/grpc")
-                    .extensions(new GrpcExtensionFactory())
+                    .withRootDirectory("src/test/resources/wiremock/")
+                    .extensions(new Jetty12GrpcExtensionFactory())
     );
     private final WireMockGrpcService mockCurrencyService = new WireMockGrpcService(
             new WireMock(WIREMOCK_PORT),
