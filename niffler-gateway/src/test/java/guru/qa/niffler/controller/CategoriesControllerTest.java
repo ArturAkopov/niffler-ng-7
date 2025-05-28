@@ -22,14 +22,8 @@ class CategoriesControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @WiremockStubs(
-            jsonFile = "categories-response.json",
-            urlPath = "/internal/categories/all",
-            queryParams = {
-                    @WiremockStubs.QueryParam(name = "username", value = "duck"),
-                    @WiremockStubs.QueryParam(name = "excludeArchived", value = "false")
-            }
-    )
+    @WiremockStubs(configPath = {"categoriesListShouldBeReturnedForCurrentUser.json"},
+    port = 8093)
     void categoriesListShouldBeReturnedForCurrentUser() throws Exception {
 
         final String fixtureUser = "duck";
