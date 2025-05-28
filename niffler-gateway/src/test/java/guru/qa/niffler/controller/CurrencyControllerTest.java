@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -83,11 +84,14 @@ class CurrencyControllerTest {
 
         mockCurrencyService.stubFor(
                 WireMockGrpc.method("GetAllCurrencies")
-                        .willReturn(WireMockGrpc.message(response)
+                        .willReturn(WireMockGrpc.message(CurrencyResponse.newBuilder()
+                                .addAllAllCurrencies(currencies)
+                                .build())
                         ));
 
         mockMvc.perform(get("/api/currencies/all")
                         .with(jwt().jwt(c -> c.claim("sub", "duck"))))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(4)))
                 .andExpect(jsonPath("$[*].currency",
                         containsInAnyOrder("RUB", "USD", "EUR", "KZT")));

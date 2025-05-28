@@ -59,7 +59,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
-    testImplementation 'org.wiremock:wiremock-standalone:3.3.1'
+    testImplementation 'org.wiremock:wiremock-standalone:3.13.0'
     testImplementation 'org.wiremock:wiremock-grpc-extension:0.10.0'
 
     protobuf files("../niffler-grpc-common/src/main/proto/niffler-currency.proto")
