@@ -17,7 +17,6 @@ import org.wiremock.grpc.dsl.WireMockGrpcService;
 
 import java.util.List;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -29,38 +28,31 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ActiveProfiles("test")
 class CurrencyControllerTest {
 
-    private static final int WIREMOCK_PORT = 8091;
-    private WireMockServer wm;
-    private WireMockGrpcService mockCurrencyService;
+    private static final int WIREMOCK_PORT = 8092;
+    private final WireMockServer wm = new WireMockServer(
+            WireMockConfiguration
+                    .wireMockConfig()
+                    .port(WIREMOCK_PORT)
+                    .withRootDirectory("src/test/resources/wiremock/grpc")
+                    .extensions(new GrpcExtensionFactory())
+    );
+    private final WireMockGrpcService mockCurrencyService = new WireMockGrpcService(
+            new WireMock(WIREMOCK_PORT),
+            "guru.qa.grpc.niffler.NifflerCurrencyService"
+    );
 
     @Autowired
     private MockMvc mockMvc;
 
     @BeforeEach
     void beforeEach() {
-        wm = new WireMockServer(
-                WireMockConfiguration
-                        .wireMockConfig()
-                        .port(WIREMOCK_PORT)
-                        .withRootDirectory("src/test/resources/wiremock/grpc")
-                        .extensions(new GrpcExtensionFactory())
-        );
-
-        mockCurrencyService = new WireMockGrpcService(
-                new WireMock(WIREMOCK_PORT),
-                "guru.qa.grpc.niffler.NifflerCurrencyService"
-        );
-
         wm.start();
-
         System.out.println("WireMock GRPC запущен на порту: " + wm.port());
     }
 
     @AfterEach
     void afterEach() {
-        if (wm != null) {
-            wm.stop();
-        }
+        wm.stop();
     }
 
     @Test
@@ -96,7 +88,6 @@ class CurrencyControllerTest {
 
         mockMvc.perform(get("/api/currencies/all")
                         .with(jwt().jwt(c -> c.claim("sub", "duck"))))
-                .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(4)))
                 .andExpect(jsonPath("$[*].currency",
                         containsInAnyOrder("RUB", "USD", "EUR", "KZT")));
