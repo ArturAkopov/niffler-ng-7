@@ -1,10 +1,6 @@
 package guru.qa.niffler.controller;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import guru.qa.niffler.extension.WiremockStubs;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,44 +18,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class CategoriesControllerTest {
 
-    private final WireMockServer wireMockServer = new WireMockServer(
-            new WireMockConfiguration()
-                    .port(8093)
-                    .globalTemplating(true)
-    );
-
-    @BeforeEach
-    void beforeEach() {
-        wireMockServer.start();
-    }
-
-    @AfterEach
-    void afterEach() {
-        wireMockServer.shutdown();
-    }
-
     @Autowired
     private MockMvc mockMvc;
 
     @Test
+    @WiremockStubs(
+            jsonFile = "categories-response.json",
+            urlPath = "/internal/categories/all",
+            queryParams = {
+                    @WiremockStubs.QueryParam(name = "username", value = "duck"),
+                    @WiremockStubs.QueryParam(name = "excludeArchived", value = "false")
+            }
+    )
     void categoriesListShouldBeReturnedForCurrentUser() throws Exception {
 
         final String fixtureUser = "duck";
-
-        wireMockServer.stubFor(WireMock.get(WireMock.urlPathEqualTo("/internal/categories/all"))
-                .withQueryParam("username", WireMock.equalTo(fixtureUser))
-                .withQueryParam("excludeArchived", WireMock.equalTo("false"))
-                .willReturn(WireMock.okJson("""
-                        [{"id":"{{randomValue type='UUID'}}",
-                        "name":"Веселье",
-                        "username":"{{request.query.username}}",
-                        "archived":false},
-                        {"id":"{{randomValue type='UUID'}}",
-                        "name":"Магазины",
-                        "username":"{{request.query.username}}",
-                        "archived":true}]
-                        """)));
-
 
         mockMvc.perform(get("/api/categories/all")
                         .with(jwt().jwt(c -> c.claim("sub", fixtureUser)))
