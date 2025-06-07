@@ -1,6 +1,7 @@
 package guru.qa.niffler.config;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 public interface Config {
 
@@ -30,12 +31,18 @@ public interface Config {
 
     String currencyGrpcAddress();
 
+    String kafkaAddress();
+
     default int currencyGrpcPort() {
         return 8092;
     }
 
     default String ghUrl() {
         return "https://api.github.com/";
+    }
+
+    default List<String> kafkaTopics() {
+        return List.of("users");
     }
 
     String allureDockerServiceUrl();
