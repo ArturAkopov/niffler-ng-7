@@ -67,6 +67,12 @@ enum LocalConfig implements Config {
 
     @Nonnull
     @Override
+    public String kafkaAddress() {
+        return "127.0.0.1:9092";
+    }
+
+    @Nonnull
+    @Override
     public String allureDockerServiceUrl() {
         return "http://127.0.0.1:5050/";
     }

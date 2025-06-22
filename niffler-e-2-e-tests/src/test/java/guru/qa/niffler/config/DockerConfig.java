@@ -72,4 +72,10 @@ enum DockerConfig implements Config {
         return Objects.requireNonNullElse(allureDockerApiUrl, "http://allure:5050/");
     }
 
+    @Nonnull
+    @Override
+    public String kafkaAddress() {
+        return "kafka:9092";
+    }
+
 }

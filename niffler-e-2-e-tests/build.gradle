@@ -86,6 +86,7 @@ sourceSets {
 }
 
 dependencies {
+    implementation 'org.yaml:snakeyaml:2.2'
     // Logs
     testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
     testImplementation "org.slf4j:slf4j-api:${slf4jVersion}"
